@@ -163,6 +163,105 @@ router.get('/', async (req, res) => {
   }
 });
 
-// כאן תוסיף את ה-PUT וה-DELETE requests עם התיעוד שלהם
 
+/**
+ * @swagger
+ * /api/business-owners/{id}:
+ *   put:
+ *     summary: Update a business owner
+ *     tags: [Business Owners]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The business owner id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: The updated business owner
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedBusinessOwner = await BusinessOwner.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedBusinessOwner);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/business-owners/{id}:
+ *   delete:
+ *     summary: Delete a business owner
+ *     tags: [Business Owners]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The business owner id
+ *     responses:
+ *       200:
+ *         description: The business owner was deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.delete('/:id', async (req, res) => {
+  try {
+    await BusinessOwner.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Business Owner deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;

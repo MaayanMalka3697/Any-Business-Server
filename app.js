@@ -61,7 +61,7 @@ mongoose.connect('mongodb+srv://maayanmalka3697:maayanmalka3697@maayan.yptlels.m
 const BusinessOwner = require('./models/BusinessOwner');
 const Customer = require('./models/Customer');
 const Appointment = require('./models/Appointment');
-
+const services = require('./routes/services');
 
 // קונפיגורציה של Swagger JSDoc
 const swaggerOptions = {
@@ -86,6 +86,7 @@ app.use('/api/business-owners', require('./routes/businessOwners'));
 app.use('/api/customers', require('./routes/customers'));
 app.use('/api/appointments', require('./routes/appointments'));
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/services', services);
 // הוספת Swagger middleware
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Swagger setup

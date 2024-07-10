@@ -1,51 +1,20 @@
-// const express = require('express');
-// const router = express.Router();
-// const Customer = require('../models/Customer');
-
-// // Add Customer
-// router.post('/add', async (req, res) => {
-//   const { name, email, businessOwner } = req.body;
-//   try {
-//     const newCustomer = new Customer({ name, email, businessOwner });
-//     await newCustomer.save();
-//     res.json(newCustomer);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
-// // Get All Customers
-// router.get('/', async (req, res) => {
-//   try {
-//     const customers = await Customer.find().populate('businessOwner');
-//     res.json(customers);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
-
-
-// module.exports = router;
-
+const express = require('express');
+const router = express.Router();
+const Service = require('../models/Service');
 
 /**
  * @swagger
  * tags:
- *   name: Customers
- *   description: Manage customers
+ *   name: Services
+ *   description: Service management for business owners
  */
-
-const express = require('express');
-const router = express.Router();
-const Customer = require('../models/Customer');
 
 /**
  * @swagger
- * /api/customers/add:
+ * /api/services/add:
  *   post:
- *     summary: Add a new customer
- *     tags: [Customers]
+ *     summary: Add a new service
+ *     tags: [Services]
  *     requestBody:
  *       required: true
  *       content:
@@ -55,13 +24,17 @@ const Customer = require('../models/Customer');
  *             properties:
  *               name:
  *                 type: string
- *               email:
+ *               description:
  *                 type: string
+ *               price:
+ *                 type: number
+ *               duration:
+ *                 type: number
  *               businessOwner:
  *                 type: string
  *     responses:
  *       200:
- *         description: Created customer
+ *         description: The newly created service
  *         content:
  *           application/json:
  *             schema:
@@ -71,31 +44,25 @@ const Customer = require('../models/Customer');
  *                   type: string
  *                 name:
  *                   type: string
- *                 email:
+ *                 description:
  *                   type: string
+ *                 price:
+ *                   type: number
+ *                 duration:
+ *                   type: number
  *                 businessOwner:
  *                   type: string
  */
-router.post('/add', async (req, res) => {
-  const { name, email, businessOwner } = req.body;
-  try {
-    const newCustomer = new Customer({ name, email, businessOwner });
-    await newCustomer.save();
-    res.json(newCustomer);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 /**
  * @swagger
- * /api/customers:
+ * /api/services:
  *   get:
- *     summary: Get all customers
- *     tags: [Customers]
+ *     summary: Get all services
+ *     tags: [Services]
  *     responses:
  *       200:
- *         description: A list of customers
+ *         description: A list of services
  *         content:
  *           application/json:
  *             schema:
@@ -107,33 +74,29 @@ router.post('/add', async (req, res) => {
  *                     type: string
  *                   name:
  *                     type: string
- *                   email:
+ *                   description:
  *                     type: string
+ *                   price:
+ *                     type: number
+ *                   duration:
+ *                     type: number
  *                   businessOwner:
  *                     type: string
  */
-router.get('/', async (req, res) => {
-  try {
-    const customers = await Customer.find().populate('businessOwner');
-    res.json(customers);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 /**
  * @swagger
- * /api/customers/{id}:
+ * /api/services/{id}:
  *   put:
- *     summary: Update a customer
- *     tags: [Customers]
+ *     summary: Update a service
+ *     tags: [Services]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The customer id
+ *         description: The service id
  *     requestBody:
  *       required: true
  *       content:
@@ -143,13 +106,15 @@ router.get('/', async (req, res) => {
  *             properties:
  *               name:
  *                 type: string
- *               email:
+ *               description:
  *                 type: string
- *               businessOwner:
- *                 type: string
+ *               price:
+ *                 type: number
+ *               duration:
+ *                 type: number
  *     responses:
  *       200:
- *         description: The updated customer
+ *         description: The updated service
  *         content:
  *           application/json:
  *             schema:
@@ -159,8 +124,12 @@ router.get('/', async (req, res) => {
  *                   type: string
  *                 name:
  *                   type: string
- *                 email:
+ *                 description:
  *                   type: string
+ *                 price:
+ *                   type: number
+ *                 duration:
+ *                   type: number
  *                 businessOwner:
  *                   type: string
  *       500:
@@ -173,31 +142,23 @@ router.get('/', async (req, res) => {
  *                 error:
  *                   type: string
  */
-router.put('/:id', async (req, res) => {
-  try {
-    const updatedCustomer = await Customer.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updatedCustomer);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 /**
  * @swagger
- * /api/customers/{id}:
+ * /api/services/{id}:
  *   delete:
- *     summary: Delete a customer
- *     tags: [Customers]
+ *     summary: Delete a service
+ *     tags: [Services]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The customer id
+ *         description: The service id
  *     responses:
  *       200:
- *         description: The customer was deleted
+ *         description: The service was deleted
  *         content:
  *           application/json:
  *             schema:
@@ -215,10 +176,44 @@ router.put('/:id', async (req, res) => {
  *                 error:
  *                   type: string
  */
+
+// Add Service
+router.post('/add', async (req, res) => {
+  const { name, description, price, duration, businessOwner } = req.body;
+  try {
+    const newService = new Service({ name, description, price, duration, businessOwner });
+    await newService.save();
+    res.json(newService);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get All Services
+router.get('/', async (req, res) => {
+  try {
+    const services = await Service.find().populate('businessOwner');
+    res.json(services);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update Service
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedService = await Service.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedService);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete Service
 router.delete('/:id', async (req, res) => {
   try {
-    await Customer.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Customer deleted' });
+    await Service.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Service deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -137,6 +137,88 @@ router.get('/', async (req, res) => {
   }
 });
 
-// כאן תוסיף את ה-PUT וה-DELETE requests עם התיעוד שלהם
+/**
+ * @swagger
+ * /api/appointments/{id}:
+ *   put:
+ *     summary: Update an appointment
+ *     tags: [Appointments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The appointment ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               businessOwner:
+ *                 type: string
+ *               customer:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Updated appointment
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 businessOwner:
+ *                   type: string
+ *                 customer:
+ *                   type: string
+ *                 date:
+ *                   type: string
+ */
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedAppointment = await Appointment.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedAppointment);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
+/**
+ * @swagger
+ * /api/appointments/{id}:
+ *   delete:
+ *     summary: Delete an appointment
+ *     tags: [Appointments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The appointment ID
+ *     responses:
+ *       200:
+ *         description: Appointment deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.delete('/:id', async (req, res) => {
+  try {
+    await Appointment.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Appointment deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;
